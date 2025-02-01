@@ -1,0 +1,107 @@
+[gd_scene load_steps=11 format=3 uid="uid://cehu6kvwtpm40"]
+
+[ext_resource type="Script" path="res://scripts/terrain_gen.gd" id="1_174xk"]
+[ext_resource type="TileSet" uid="uid://up0836vxbj6i" path="res://assets/ground_tiles.tres" id="2_rtfis"]
+[ext_resource type="Texture2D" uid="uid://c7on0y52sa66q" path="res://assets/characters.tres" id="3_bt7iq"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="3_h6w4j"]
+[ext_resource type="Script" path="res://metronome.gd" id="5_gvk6v"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_myxje"]
+atlas = ExtResource("3_bt7iq")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_jn7oe"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_myxje")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r4tcn"]
+size = Vector2(16, 16)
+
+[sub_resource type="Gradient" id="Gradient_wqu5o"]
+offsets = PackedFloat32Array(0, 0.0135135)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_1wb06"]
+gradient = SubResource("Gradient_wqu5o")
+
+[node name="GameScene" type="Node2D" node_paths=PackedStringArray("tile_map_layer", "placeables_layer")]
+script = ExtResource("1_174xk")
+tile_map_layer = NodePath("GroundLayer")
+placeables_layer = NodePath("PlaceablesLayer")
+
+[node name="GroundLayer" type="TileMapLayer" parent="."]
+tile_set = ExtResource("2_rtfis")
+
+[node name="PlaceablesLayer" type="TileMapLayer" parent="."]
+tile_set = ExtResource("2_rtfis")
+collision_visibility_mode = 1
+
+[node name="Interact Cursor" type="ColorRect" parent="."]
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(1, 1, 1, 0.219608)
+
+[node name="Player" type="CharacterBody2D" parent="." node_paths=PackedStringArray("interact_cursor", "INTERACT_TIMER")]
+script = ExtResource("3_h6w4j")
+speed = 100
+interact_cursor = NodePath("../Interact Cursor")
+INTERACT_TIMER = NodePath("InteractTimer")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
+sprite_frames = SubResource("SpriteFrames_jn7oe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_r4tcn")
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+zoom = Vector2(2, 2)
+
+[node name="UI" type="CanvasLayer" parent="Player"]
+
+[node name="Metronome" type="GridContainer" parent="Player/UI"]
+offset_right = 92.0
+offset_bottom = 28.0
+size_flags_horizontal = 3
+size_flags_vertical = 10
+columns = 4
+script = ExtResource("5_gvk6v")
+
+[node name="TempoBox1" type="TextureRect" parent="Player/UI/Metronome"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+texture = SubResource("GradientTexture2D_1wb06")
+
+[node name="TempoBox2" type="TextureRect" parent="Player/UI/Metronome"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+texture = SubResource("GradientTexture2D_1wb06")
+
+[node name="TempoBox3" type="TextureRect" parent="Player/UI/Metronome"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+texture = SubResource("GradientTexture2D_1wb06")
+
+[node name="TempoBox4" type="TextureRect" parent="Player/UI/Metronome"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+texture = SubResource("GradientTexture2D_1wb06")
+
+[node name="Timer" type="Timer" parent="Player/UI/Metronome"]
+autostart = true
+
+[node name="InteractTimer" type="Timer" parent="Player"]
+wait_time = 0.9
+one_shot = true
+
+[connection signal="timeout" from="Player/UI/Metronome/Timer" to="Player/UI/Metronome" method="_on_timer_timeout"]

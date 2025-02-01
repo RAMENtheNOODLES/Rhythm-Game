@@ -1,0 +1,6 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://c7on0y52sa66q"]
+
+[ext_resource type="Texture2D" uid="uid://pxjoumjfh16a" path="res://assets/kenney/roguelikeChar_transparent.png" id="1_lb2nb"]
+
+[resource]
+atlas = ExtResource("1_lb2nb")
