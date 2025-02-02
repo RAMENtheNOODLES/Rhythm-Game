@@ -1868,4 +1868,6 @@ separation = Vector2i(1, 1)
 occlusion_layer_0/light_mask = 1
 physics_layer_0/collision_layer = 1
 navigation_layer_0/layers = 1
+custom_data_layer_0/name = "health"
+custom_data_layer_0/type = 2
 sources/1 = SubResource("TileSetAtlasSource_s1bpp")
