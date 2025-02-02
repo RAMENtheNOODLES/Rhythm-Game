@@ -6,4 +6,11 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>RhythmGame</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="addons\copper_dc\plugin.cfg" />
+    <Content Include="addons\copper_dc\scripts\built_in_commands.gd" />
+    <Content Include="addons\copper_dc\scripts\dc_entry.gd" />
+    <Content Include="addons\copper_dc\scripts\debug_command.gd" />
+    <Content Include="addons\copper_dc\scripts\debug_console.gd" />
+  </ItemGroup>
 </Project>

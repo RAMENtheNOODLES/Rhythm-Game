@@ -11,7 +11,7 @@ public partial class Player : CharacterBody2D
     [Export] private int _speed = 360;
     [Export] private ColorRect _interactCursor;
     [Export] private Timer _interactTimer;
-    
+    [Export] private Label _playerCoords;
 
     private Vector2 _screenSize;
 
@@ -32,6 +32,7 @@ public partial class Player : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+        _playerCoords.Text = "" + Globals.GetRoundedXy(Position);
         Velocity = Vector2.Zero;
         
         if (Input.IsActionPressed("move_right"))
@@ -74,6 +75,7 @@ public partial class Player : CharacterBody2D
 
         if (Input.IsActionPressed("interact") && _interactTimer.TimeLeft == 0)
         {
+            GD.Print("Interact cursor pos: " + _interactCursor.Position / 16);
             Globals.RaiseInteractTileEvent(_interactCursor.Position.X, _interactCursor.Position.Y);
             _interactTimer.Start();
         }

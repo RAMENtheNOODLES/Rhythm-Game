@@ -27,6 +27,8 @@ public partial class Globals : Resource
 	public static Color MetronomeOffColor = Colors.Black;
 	public static Color MetronomeOnColor = Colors.White;
 	public const int TimeSignature = 4;
+
+	public static GDScript DebugConsole = GD.Load<GDScript>("res://addons/copper_dc/scripts/debug_console.gd");
 	
 	public enum Layers
 	{
@@ -36,17 +38,17 @@ public partial class Globals : Resource
 	}
 	public interface ITile
 	{
-		public static Vector2I AtlasCoords { get; set; }
+		public Vector2I AtlasCoords { get; set; }
 		string Name { get; init; }
 		const Layers Layer = Layers.Null;
 	}
 	public struct Placeable : ITile
 	{
-		public Vector2I AtlasCoords { get; init; }
+		public Vector2I AtlasCoords { get; set; }
 		public string Name { get; init; }
 		public const Layers Layer = Layers.PlaceableLayer;
 		public int Health { get; private set; } = -1;
-		public bool Unbreakable { set; get; } = false;
+		public bool Unbreakable { private set; get; } = false;
 
 		private void DestroyThisTile()
 		{
@@ -88,7 +90,7 @@ public partial class Globals : Resource
 
 	public struct Tile : ITile
 	{
-		public Vector2I AtlasCoords { get; init; }
+		public Vector2I AtlasCoords { get; set; }
 		public string Name { get; init; }
 		public const Layers Layer = Layers.TileLayer;
 
@@ -118,5 +120,19 @@ public partial class Globals : Resource
 	public static Vector2I GetRoundedXy(float x, float y)
 	{
 		return new Vector2I(Mathf.FloorToInt(x / TileLength), Mathf.FloorToInt(y / TileLength));
+	}
+
+	public static bool IsAdjacent(TileMapLayer tileMapLayer, Vector2I coords, ITile cellToAvoid)
+	{
+		var atlasCoords = cellToAvoid.AtlasCoords;
+		for (var i = 0L; i < 16L; i++)
+		{
+			if (tileMapLayer.GetNeighborCell(coords, (TileSet.CellNeighbor)i) == atlasCoords)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

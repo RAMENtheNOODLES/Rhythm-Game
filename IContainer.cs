@@ -7,6 +7,11 @@ public interface IContainer
 {
     int Size { get; init; }
     List<IInteractable> Items { get; }
+    
+    public bool IsFull()
+    {
+        return Items.Count == Size;
+    }
 
     public bool AddItem(IInteractable item)
     {

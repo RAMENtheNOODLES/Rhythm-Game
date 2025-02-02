@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Godot;
+using RhythmGame.addons.copper_dc.scripts;
 
 namespace RhythmGame;
 
@@ -16,10 +17,11 @@ public partial class TerrainGen : Node
     private FastNoiseLite _noise = new();
     private const int Range = 128;
 
-    private Dictionary<Vector2I, Globals.ITile> _placeables = new();
+    private Dictionary<Vector2I, Globals.Placeable> _placeables = new();
 
     public override void _Ready()
     {
+        DebugConsole.SetPauseOnOpen(true);
         _screenSize = GetViewport().GetVisibleRect().Size;
         Globals.GetTileEvent += get_tile_from_xy;
         Globals.InteractTileEvent += interact_tile;
@@ -70,10 +72,26 @@ public partial class TerrainGen : Node
                         break;
                     case > 0.1:
                         TileMapLayer.SetCell(coord, 1 , Globals.Tiles.Dirt.AtlasCoords);
-                        PlaceablesLayer.SetCell(coord, 1, Globals.Placeables.Tree.AtlasCoords);
-                        _placeables.Add(coord, Globals.Placeables.Tree);
+                        if (random.NextSingle() > 0.7)
+                        {
+                            var label = new Label();
+                            label.Text = "" + coord;
+                            label.Position = coord * 16;
+                            label.Scale = new Vector2(0.5f, 0.5f);
+                            AddChild(label);
+                            PlaceablesLayer.SetCell(coord, 1, Globals.Placeables.Tree.AtlasCoords);
+                            _placeables.Add(coord, Globals.Placeables.Tree);
+                        }
                         break;
                 };
+            }
+        }
+
+        foreach (var (key, value) in _placeables)
+        {
+            if (Globals.IsAdjacent(PlaceablesLayer, key, Globals.Placeables.Tree))
+            {
+                _placeables.Remove(key);
             }
         }
     }
@@ -90,22 +108,22 @@ public partial class TerrainGen : Node
 
     private int interact_tile(double x, double y)
     {
-        var xRound = (int) Mathf.Round(x / Globals.TileLength);
-        var yRound = (int)Mathf.Round(y / Globals.TileLength);
+        var xRound = Mathf.RoundToInt(x / Globals.TileLength);
+        var yRound = Mathf.RoundToInt(y / Globals.TileLength);
         
         var atlasCoords = PlaceablesLayer.GetCellAtlasCoords(new Vector2I(xRound, yRound));
 
         if (atlasCoords == Globals.Placeables.Tree.AtlasCoords)
         {
-            GD.Print("Mining Tree...");
-            var placeable = (Globals.Placeable) _placeables[new Vector2I(xRound, yRound)];
+            DebugConsole.Log("Mining Tree...");
+            var placeable = _placeables[new Vector2I(xRound, yRound)];
             placeable.DecrementHealth();
-            GD.Print("Tree health: " + placeable.Health);
+            DebugConsole.Log("Tree health: " + placeable.Health);
             _placeables[new Vector2I(xRound, yRound)] = placeable;
         }
         else
         {
-            GD.Print("Nothing found...");
+            DebugConsole.LogError("Nothing found...");
             return -1;
         }
 
@@ -115,6 +133,8 @@ public partial class TerrainGen : Node
     private void _DestroyTile(Vector2I tile)
     {
         PlaceablesLayer.EraseCell(tile);
-        _placeables.Remove(tile);
+        var result = _placeables.Remove(tile);
+        if (!result)
+            DebugConsole.LogError($"Placeable was not removed at {tile}...");
     }
 }

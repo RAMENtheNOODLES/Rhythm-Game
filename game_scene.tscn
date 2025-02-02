@@ -49,11 +49,12 @@ offset_right = 16.0
 offset_bottom = 16.0
 color = Color(1, 1, 1, 0.219608)
 
-[node name="Player" type="CharacterBody2D" parent="." node_paths=PackedStringArray("_interactCursor", "_interactTimer")]
+[node name="Player" type="CharacterBody2D" parent="." node_paths=PackedStringArray("_interactCursor", "_interactTimer", "_playerCoords")]
 position = Vector2(16, 16)
 script = ExtResource("3_q15ho")
 _interactCursor = NodePath("../Interact Cursor")
 _interactTimer = NodePath("InteractTimer")
+_playerCoords = NodePath("UI/PlayerCoords")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
 sprite_frames = SubResource("SpriteFrames_jn7oe")
@@ -113,6 +114,18 @@ texture = SubResource("GradientTexture2D_1wb06")
 
 [node name="Timer" type="Timer" parent="Player/UI/Metronome"]
 autostart = true
+
+[node name="PlayerCoords" type="Label" parent="Player/UI"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -55.0
+offset_top = -23.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Coords"
 
 [node name="InteractTimer" type="Timer" parent="Player"]
 wait_time = 0.9
